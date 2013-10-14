@@ -40,18 +40,15 @@ class RandomSlugField(SlugField):
         self.exclude_upper = kwargs.pop('exclude_upper', False)
         self.exclude_digits = kwargs.pop('exclude_digits', False)
 
-        if self.length == None:
+        if self.length is None:
             raise ValueError("Missing 'length' argument.")
-        elif type(self.length) is not int:
+        elif not isinstance(self.length, int):
             raise TypeError("'length' argument is invalid type. Must be integer.")
 
         if self.exclude_lower and self.exclude_upper and self.exclude_digits:
             raise ValueError("Cannot exclude all valid characters.")
 
         kwargs['max_length'] = self.length
-
-        if 'db_index' not in kwargs:
-            kwargs['db_index'] = True
 
         self.valid_chars = string.ascii_letters + string.digits
         if self.exclude_lower:
