@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='django-randomslugfield',
     version='0.1.1',
-    author='Michael Johnson',
+    author='Mike Johnson',
     author_email='mkrjhnsn@gmail.com',
     packages=['randomslugfield'],
     url='http://github.com/melinko/django-randomslugfield',
