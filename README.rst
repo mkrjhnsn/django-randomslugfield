@@ -2,6 +2,10 @@
 django-randomslugfield
 ======================
 
+.. image:: https://travis-ci.org/melinko/django-randomslugfield.png?branch=master
+    :alt: Build Status
+    :target: https://travis-ci.org/melinko/django-randomslugfield
+
 django-randomslugfield is a Django field that automatically generates random slugs.
 
 e.g. example.com/kEwD58P
