@@ -6,11 +6,16 @@ from django.test.utils import get_runner
 
 def main():
     settings.configure(
-        DEBUG=True,
-        TEMPLATE_DEBUG=True,
         INSTALLED_APPS=[
             'randomslugfield',
         ],
+        DATABASES={
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+            }
+        },
+        DEBUG=True,
+        TEMPLATE_DEBUG=True,
     )
 
     test_runner = get_runner(settings)(verbosity=2, interactive=True)
