@@ -16,3 +16,8 @@ install:
 
 script:
   - python setup.py test
+
+matrix:
+  exclude:
+    - python: 3.3
+      env: DJANGO=Django==1.4 --use-mirrors
