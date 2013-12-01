@@ -13,8 +13,6 @@ def main():
                 'ENGINE': 'django.db.backends.sqlite3',
             }
         },
-        DEBUG=True,
-        TEMPLATE_DEBUG=True,
     )
 
     from django.test.utils import get_runner
