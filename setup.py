@@ -1,4 +1,7 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(
     name='django-randomslugfield',
@@ -10,4 +13,6 @@ setup(
     license='MIT',
     description='A Django field that automatically generates random slugs.',
     long_description=open('README.rst').read(),
+    tests_require=['Django'],
+    test_suite='run_tests.main',
 )
