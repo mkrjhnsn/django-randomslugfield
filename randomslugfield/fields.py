@@ -9,7 +9,7 @@ class RandomSlugField(SlugField):
 
     Generates a random ascii based slug eg. www.example.com/kEwD58P
 
-    By default, sets editable=False, blank=True.
+    By default sets editable=False, blank=True, and unique=True.
 
     Requires arguments:
 
@@ -34,6 +34,7 @@ class RandomSlugField(SlugField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('blank', True)
         kwargs.setdefault('editable', False)
+        kwargs.setdefault('unique', True)
 
         self.length = kwargs.pop('length', None)
         self.exclude_lower = kwargs.pop('exclude_lower', False)
