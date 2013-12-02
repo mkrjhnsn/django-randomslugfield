@@ -62,11 +62,15 @@ class RandomSlugField(SlugField):
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
     def generate_slug(self, model_instance):
+        queryset = model_instance.__class__._default_manager.all()
+
+        if queryset.count() >= self.valid_chars**self.length:
+            raise ValueError("No available slugs remaining.")
+
         slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
 
         # Exclude the current model instance from the queryset used in
         # finding next valid hash.
-        queryset = model_instance.__class__._default_manager.all()
         if model_instance.pk:
             queryset = queryset.exclude(pk=model_instance.pk)
 
