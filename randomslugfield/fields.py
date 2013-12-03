@@ -2,6 +2,7 @@ import random
 import string
 
 from django.db.models import SlugField
+from django.core.exceptions import FieldError
 
 
 class RandomSlugField(SlugField):
@@ -65,7 +66,7 @@ class RandomSlugField(SlugField):
         queryset = model_instance.__class__._default_manager.all()
 
         if queryset.count() >= len(self.valid_chars)**self.length:
-            raise ValueError("No available slugs remaining.")
+            raise FieldError("No available slugs remaining.")
 
         slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
 
