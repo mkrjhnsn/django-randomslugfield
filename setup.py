@@ -12,9 +12,8 @@ setup(
     url="http://github.com/melinko/django-randomslugfield",
     license="MIT",
     description="A Django field that automatically generates random slugs.",
-    long_description="Generates unique random slugs using " \
-        "`'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'` " \
-        "character set.",
+    long_description="Generates unique random slugs using these characters " \
+        "`abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`.",
     tests_require=['django'],
     test_suite='run_tests.main',
 )

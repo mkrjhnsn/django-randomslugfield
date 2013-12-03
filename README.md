@@ -10,7 +10,7 @@ e.g. example.com/kEwD58P
 
 ##Getting it
 
-You can get randomslugfield by using pip or easy_install:
+You can get randomslugfield by using `pip` or `easy_install`:
 
 ```
 $ pip install django-randomslugfield
@@ -32,9 +32,9 @@ INSTALLED_APPS = (
 
 ##Usage
 
-Import RandomSlugField and use it in your model:
+Import `RandomSlugField` and use it in your model:
 
-```
+```python
 from django.db import models
 from randomslugfield import RandomSlugField
 
@@ -48,7 +48,7 @@ The `length` argument is required.
 
 By default randomslugfield generates its slug using these characters:
 
-`'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'`
+`abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
 
 You can optionally exclude lowercase/uppercase/digits using `exclude_lower=True`, `exclude_upper=True`, `exclude_digits=True`.
 
