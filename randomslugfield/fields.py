@@ -1,4 +1,5 @@
 import random
+import re
 import string
 
 from django.db.models import SlugField
@@ -41,6 +42,7 @@ class RandomSlugField(SlugField):
         self.exclude_lower = kwargs.pop('exclude_lower', False)
         self.exclude_upper = kwargs.pop('exclude_upper', False)
         self.exclude_digits = kwargs.pop('exclude_digits', False)
+        self.exclude_vowels = kwargs.pop('exclude_vowels', False)
 
         if self.length is None:
             raise ValueError("Missing 'length' argument.")
@@ -59,6 +61,9 @@ class RandomSlugField(SlugField):
             self.valid_chars = self.valid_chars.replace(string.ascii_uppercase, '')
         if self.exclude_digits:
             self.valid_chars = self.valid_chars.replace(string.digits, '')
+        if self.exclude_vowels:
+            self.valid_chars = re.sub(r'[aeiou]', '', self.valid_chars,
+                                      flags=re.IGNORECASE)
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
@@ -71,7 +76,7 @@ class RandomSlugField(SlugField):
         slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
 
         # Exclude the current model instance from the queryset used in
-        # finding next valid hash.
+        # finding next valid slug.
         if model_instance.pk:
             queryset = queryset.exclude(pk=model_instance.pk)
 
