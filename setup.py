@@ -1,11 +1,8 @@
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 setup(
     name="django-randomslugfield",
-    version="0.1.1",
+    version="0.2.0",
     author="Michael Johnson",
     author_email="mkrjhnsn@gmail.com",
     packages=['randomslugfield'],
