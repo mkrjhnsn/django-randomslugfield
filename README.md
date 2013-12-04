@@ -50,7 +50,7 @@ By default randomslugfield generates its slug using these characters:
 
 `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
 
-You can optionally exclude lowercase/uppercase/digits using `exclude_lower=True`, `exclude_upper=True`, `exclude_digits=True`.
+You can optionally exclude lowercase/uppercase/digits/vowels using `exclude_lower=True`, `exclude_upper=True`, `exclude_digits=True`, `exclude_vowels=True`.
 
 You cannot exclude all characters.
 
