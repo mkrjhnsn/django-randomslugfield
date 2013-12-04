@@ -1,33 +1,105 @@
+from django.core.exceptions import FieldError
 from django.db import models
 from django.test import TestCase
 
 from .fields import RandomSlugField
 
 
-class TestModel(models.Model):
-    slug = RandomSlugField(length=7)
-    slug_lower = RandomSlugField(length=7, exclude_upper=True,
-                                 exclude_digits=True)
-    slug_upper = RandomSlugField(length=7, exclude_lower=True,
-                                 exclude_digits=True)
-    slug_digits = RandomSlugField(length=7, exclude_lower=True,
-                                  exclude_upper=True)
+class FullSlug(models.Model):
+    slug = RandomSlugField(length=255)
 
 
-class RandomSlugFieldTest(TestCase):
+class UppercaseSlug(models.Model):
+    slug = RandomSlugField(length=255, exclude_lower=True, exclude_digits=True)
+
+
+class LowercaseSlug(models.Model):
+    slug = RandomSlugField(length=255, exclude_upper=True, exclude_digits=True)
+
+
+class DigitsSlug(models.Model):
+    slug = RandomSlugField(length=255, exclude_lower=True, exclude_upper=True)
+
+
+class NoVowelSlug(models.Model):
+    slug = RandomSlugField(length=255, exclude_vowels=True)
+
+
+class MaxSlugs(models.Model):
+    slug = RandomSlugField(length=1, exclude_lower=True, exclude_upper=True)
+
+
+class RandomSlugTestCase(TestCase):
+    def setUp(self):
+        self.lower = 'abcdefghijklmnopqrstuvwxyz'
+        self.upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        self.digits = '0123456789'
+        self.no_vowels = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ'
+
+        FullSlug.objects.create()
+        LowercaseSlug.objects.create()
+        UppercaseSlug.objects.create()
+        DigitsSlug.objects.create()
+        NoVowelSlug.objects.create()
+        for _ in range(10):
+            MaxSlugs.objects.create()
+
     def test_slug_length(self):
-        m = TestModel.objects.create()
-        self.assertEqual(len(m.slug), 7)
-        self.assertTrue(m.slug.isalnum())
+        '''Test to make sure slug is correct length.'''
+        obj = FullSlug.objects.first()
+        self.assertEqual(len(obj.slug), 255)
 
-    def test_slug_is_lowercase(self):
-        m = TestModel.objects.create()
-        self.assertTrue(m.slug_lower.islower() and m.slug_lower.isalpha())
+    def test_slug_charset(self):
+        '''Test to make sure slug only contains ascii characters and
+        digits.
+        '''
+        chars = self.upper + self.lower + self.digits
+        obj = FullSlug.objects.first()
+        self.assertTrue(obj.slug.isalnum())
+        for char in obj.slug:
+            self.assertTrue(char in chars)
 
     def test_slug_is_uppercase(self):
-        m = TestModel.objects.create()
-        self.assertTrue(m.slug_upper.isupper() and m.slug_upper.isalpha())
+        '''Test to make sure slug only contains uppercase characters.'''
+        chars = self.upper
+        obj = UppercaseSlug.objects.first()
+        self.assertTrue(obj.slug.isupper() and obj.slug.isalpha())
+        for char in obj.slug:
+            self.assertTrue(char in chars)
 
-    def test_slug_is_all_digits(self):
-        m = TestModel.objects.create()
-        self.assertTrue(m.slug_digits.isdigit())
+    def test_slug_is_lowercase(self):
+        '''Test to make sure slug only contains lowercase characters.'''
+        chars = self.lower
+        obj = LowercaseSlug.objects.first()
+        self.assertTrue(obj.slug.islower() and obj.slug.isalpha())
+        for char in obj.slug:
+            self.assertTrue(char in chars)
+
+    def test_slug_is_digits(self):
+        '''Test to make sure slug only contains digits.'''
+        chars = self.digits
+        obj = DigitsSlug.objects.first()
+        self.assertTrue(obj.slug.isdigit())
+        for char in obj.slug:
+            self.assertTrue(char in chars)
+
+    def test_slug_has_no_vowels(self):
+        '''Test to make sure slug contains no vowels.'''
+        chars = self.no_vowels + self.digits
+        obj = NoVowelSlug.objects.first()
+        self.assertTrue(obj.slug.isalnum())
+        for char in obj.slug:
+            self.assertTrue(char in chars)
+
+    def test_max_slug_limit(self):
+        '''Test to make sure slug generation doesn't get stuck in a
+        never ending loop when there are no more possible slugs.
+        '''
+        self.assertRaises(FieldError, MaxSlugs.objects.create)
+
+    def test_slugs_are_unique(self):
+        '''Test to make sure all slugs generated are unique.'''
+        control = MaxSlugs.objects.get(pk=1)
+        queryset = MaxSlugs.objects.all().exclude(pk=1)
+        for obj in queryset:
+            self.assertNotEqual(obj.slug, control.slug)
