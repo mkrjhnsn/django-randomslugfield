@@ -62,8 +62,7 @@ class RandomSlugField(SlugField):
         if self.exclude_digits:
             self.valid_chars = self.valid_chars.replace(string.digits, '')
         if self.exclude_vowels:
-            self.valid_chars = re.sub(r'[aeiou]', '', self.valid_chars,
-                                      flags=re.IGNORECASE)
+            self.valid_chars = re.sub(r'[aeiouAEIOU]', '', self.valid_chars)
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
