@@ -34,7 +34,7 @@ class RandomSlugTestCase(TestCase):
         self.lower = 'abcdefghijklmnopqrstuvwxyz'
         self.upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         self.digits = '0123456789'
-        self.no_vowels = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ'
+        self.vowels = 'aeiouAEIOU'
 
         FullSlug.objects.create()
         LowercaseSlug.objects.create()
@@ -85,11 +85,11 @@ class RandomSlugTestCase(TestCase):
 
     def test_slug_has_no_vowels(self):
         '''Test to make sure slug contains no vowels.'''
-        chars = self.no_vowels + self.digits
+        chars = self.vowels
         obj = NoVowelSlug.objects.get(pk=1)
         self.assertTrue(obj.slug.isalnum())
         for char in obj.slug:
-            self.assertTrue(char in chars)
+            self.assertFalse(char in chars)
 
     def test_max_slug_limit(self):
         '''Test to make sure slug generation doesn't get stuck in a
