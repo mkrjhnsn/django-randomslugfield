@@ -29,6 +29,9 @@ class RandomSlugField(SlugField):
         exclude_digits
             Boolean to exclude digits. (default=False)
 
+        exclude_vowels
+            Boolean to exclude vowels. (default=False)
+
     Inspired by django-extensions AutoSlugField:
     http://pythonhosted.org/django-extensions/
     """

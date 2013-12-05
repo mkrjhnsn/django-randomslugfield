@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="django-randomslugfield",
-    version="0.2.0",
+    version="0.2.1",
     author="Michael Johnson",
     author_email="mkrjhnsn@gmail.com",
     packages=['randomslugfield'],
