@@ -5,6 +5,8 @@ from django.test import TestCase
 from .fields import RandomSlugField
 
 
+# Using length=255 to increase chances of getting invalid character in
+# generated slug.
 class FullSlug(models.Model):
     slug = RandomSlugField(length=255)
 
@@ -92,8 +94,8 @@ class RandomSlugTestCase(TestCase):
             self.assertFalse(char in chars)
 
     def test_max_slug_limit(self):
-        '''Test to make sure slug generation doesn't get stuck in a
-        never ending loop when there are no more possible slugs.
+        '''Test to make sure slug generation stops when there isn't any
+        possible slugs remaining.
         '''
         self.assertRaises(FieldError, MaxSlugs.objects.create)
 
