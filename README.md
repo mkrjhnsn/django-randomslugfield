@@ -1,8 +1,8 @@
 #django-randomslugfield
 
 [![Build Status](https://travis-ci.org/melinko/django-randomslugfield.png?branch=master)](https://travis-ci.org/melinko/django-randomslugfield)
-[![Latest PyPI Version](https://pypip.in/v/django-randomslugfield/badge.png)](https://crate.io/package/django-randomslugfield)
-[![Number of PyPI downloads](https://pypip.in/d/django-randomslugfield/badge.png)](https://crate.io/package/django-randomslugfield)
+[![Latest PyPI Version](https://pypip.in/v/django-randomslugfield/badge.png)](https://crate.io/packages/django-randomslugfield/)
+[![Number of PyPI downloads](https://pypip.in/d/django-randomslugfield/badge.png)](https://crate.io/packages/django-randomslugfield/)
 
 Django field that automatically generates random slugs.
 
