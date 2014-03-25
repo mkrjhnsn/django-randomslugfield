@@ -2,8 +2,8 @@ import random
 import re
 import string
 
-from django.db.models import SlugField
 from django.core.exceptions import FieldError
+from django.db.models import SlugField
 
 
 class RandomSlugField(SlugField):
@@ -20,11 +20,11 @@ class RandomSlugField(SlugField):
 
     Optional arguments:
 
-        exclude_lower
-            Boolean to exclude lowercase ascii characters. (default=False)
-
         exclude_upper
-            Boolean to exclude uppercase ascii characters. (default=False)
+            Boolean to exclude uppercase characters. (default=False)
+
+        exclude_lower
+            Boolean to exclude lowercase characters. (default=False)
 
         exclude_digits
             Boolean to exclude digits. (default=False)
@@ -43,9 +43,9 @@ class RandomSlugField(SlugField):
         kwargs.setdefault('unique', True)
         self.length = length
         self.chars = self.generate_charset(exclude_upper=exclude_upper,
-                                      exclude_lower=exclude_lower,
-                                      exclude_digits=exclude_digits,
-                                      exclude_vowels=exclude_vowels)
+                                           exclude_lower=exclude_lower,
+                                           exclude_digits=exclude_digits,
+                                           exclude_vowels=exclude_vowels)
 
         kwargs['max_length'] = self.length
         super(RandomSlugField, self).__init__(*args, **kwargs)
@@ -89,7 +89,8 @@ class RandomSlugField(SlugField):
         kwargs[self.attname] = slug
 
         while queryset.filter(**kwargs):
-            slug = ''.join(random.choice(self.chars) for _ in range(self.length))
+            slug = (''.join(random.choice(self.chars)
+                    for _ in range(self.length)))
             kwargs[self.attname] = slug
 
         return slug
