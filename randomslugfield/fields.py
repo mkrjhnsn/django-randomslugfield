@@ -36,46 +36,43 @@ class RandomSlugField(SlugField):
     http://pythonhosted.org/django-extensions/
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, length, exclude_upper=False, exclude_lower=False,
+                 exclude_digits=False, exclude_vowels=False, *args, **kwargs):
         kwargs.setdefault('blank', True)
         kwargs.setdefault('editable', False)
         kwargs.setdefault('unique', True)
-
-        self.length = kwargs.pop('length', None)
-        self.exclude_lower = kwargs.pop('exclude_lower', False)
-        self.exclude_upper = kwargs.pop('exclude_upper', False)
-        self.exclude_digits = kwargs.pop('exclude_digits', False)
-        self.exclude_vowels = kwargs.pop('exclude_vowels', False)
-
-        if self.length is None:
-            raise ValueError("Missing 'length' argument.")
-        elif not isinstance(self.length, int):
-            raise TypeError("'length' argument is invalid type. Must be integer.")
-
-        if self.exclude_lower and self.exclude_upper and self.exclude_digits:
-            raise ValueError("Cannot exclude all valid characters.")
+        self.length = length
+        self.chars = self.generate_charset(exclude_upper=exclude_upper,
+                                      exclude_lower=exclude_lower,
+                                      exclude_digits=exclude_digits,
+                                      exclude_vowels=exclude_vowels)
 
         kwargs['max_length'] = self.length
-
-        self.valid_chars = string.ascii_letters + string.digits
-        if self.exclude_lower:
-            self.valid_chars =  self.valid_chars.replace(string.ascii_lowercase, '')
-        if self.exclude_upper:
-            self.valid_chars = self.valid_chars.replace(string.ascii_uppercase, '')
-        if self.exclude_digits:
-            self.valid_chars = self.valid_chars.replace(string.digits, '')
-        if self.exclude_vowels:
-            self.valid_chars = re.sub(r'[aeiouAEIOU]', '', self.valid_chars)
-
         super(RandomSlugField, self).__init__(*args, **kwargs)
+
+    def generate_charset(self, exclude_upper, exclude_lower,
+                         exclude_digits, exclude_vowels):
+        if exclude_lower and exclude_upper and exclude_digits:
+            raise ValueError("Cannot exclude all valid characters.")
+
+        chars = string.ascii_letters + string.digits
+        if exclude_upper:
+            chars = chars.replace(string.ascii_uppercase, '')
+        if exclude_lower:
+            chars =  chars.replace(string.ascii_lowercase, '')
+        if exclude_digits:
+            chars = chars.replace(string.digits, '')
+        if exclude_vowels:
+            chars = re.sub(r'[aeiouAEIOU]', '', chars)
+        return chars
 
     def generate_slug(self, model_instance):
         queryset = model_instance.__class__._default_manager.all()
 
-        if queryset.count() >= len(self.valid_chars)**self.length:
+        if queryset.count() >= len(self.chars)**self.length:
             raise FieldError("No available slugs remaining.")
 
-        slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
+        slug = ''.join(random.choice(self.chars) for _ in range(self.length))
 
         # Exclude the current model instance from the queryset used in
         # finding next valid slug.
@@ -92,18 +89,18 @@ class RandomSlugField(SlugField):
         kwargs[self.attname] = slug
 
         while queryset.filter(**kwargs):
-            slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
+            slug = ''.join(random.choice(self.chars) for _ in range(self.length))
             kwargs[self.attname] = slug
 
         return slug
 
     def pre_save(self, model_instance, add):
-        value = getattr(model_instance, self.attname)
-        if not value:
+        if add:
             value = self.generate_slug(model_instance)
             setattr(model_instance, self.attname, value)
-
-        return value
+            return value
+        else:
+            super(RandomSlugField, self).pre_save(model_instance, add)
 
     def south_field_triple(self):
         "Returns a suitable description of this field for South."
