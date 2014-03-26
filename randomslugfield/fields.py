@@ -102,18 +102,3 @@ class RandomSlugField(SlugField):
             return value
         else:
             super(RandomSlugField, self).pre_save(model_instance, add)
-
-    def south_field_triple(self):
-        "Returns a suitable description of this field for South."
-        # We'll just introspect the _actual_ field.
-        from south.modelsinspector import introspector
-        field_class = '%s.RandomSlugField' % self.__module__
-        args, kwargs = introspector(self)
-        kwargs.update({
-            'length': repr(self.length),
-            'exclude_lower': repr(self.exclude_lower),
-            'exclude_upper': repr(self.exclude_upper),
-            'exclude_digits': repr(self.exclude_digits),
-        })
-        # That's our definition!
-        return (field_class, args, kwargs)
