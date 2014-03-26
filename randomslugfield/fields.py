@@ -36,25 +36,31 @@ class RandomSlugField(SlugField):
     http://pythonhosted.org/django-extensions/
     """
 
-    def __init__(self, length, exclude_upper=False, exclude_lower=False,
+    def __init__(self, length=None, exclude_upper=False, exclude_lower=False,
                  exclude_digits=False, exclude_vowels=False, *args, **kwargs):
         kwargs.setdefault('blank', True)
         kwargs.setdefault('editable', False)
         kwargs.setdefault('unique', True)
-        self.length = length
-        self.chars = self.generate_charset(exclude_upper=exclude_upper,
-                                           exclude_lower=exclude_lower,
-                                           exclude_digits=exclude_digits,
-                                           exclude_vowels=exclude_vowels)
 
+        if length is None:
+            raise ValueError("Missing 'length' argument.")
+        elif exclude_lower and exclude_upper and exclude_digits:
+            raise ValueError("Cannot exclude all valid characters.")
+        else:
+            self.length = length
+            self.exclude_upper = exclude_upper
+            self.exclude_lower = exclude_lower
+            self.exclude_digits = exclude_digits
+            self.exclude_vowels = exclude_vowels
+        self.chars = self.generate_charset(exclude_upper=self.exclude_upper,
+                                           exclude_lower=self.exclude_lower,
+                                           exclude_digits=self.exclude_digits,
+                                           exclude_vowels=self.exclude_vowels)
         kwargs['max_length'] = self.length
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
     def generate_charset(self, exclude_upper, exclude_lower,
                          exclude_digits, exclude_vowels):
-        if exclude_lower and exclude_upper and exclude_digits:
-            raise ValueError("Cannot exclude all valid characters.")
-
         chars = string.ascii_letters + string.digits
         if exclude_upper:
             chars = chars.replace(string.ascii_uppercase, '')
@@ -96,9 +102,24 @@ class RandomSlugField(SlugField):
         return slug
 
     def pre_save(self, model_instance, add):
-        if add:
+        value = getattr(model_instance, self.attname)
+        if not value:
             value = self.generate_slug(model_instance)
             setattr(model_instance, self.attname, value)
-            return value
-        else:
-            super(RandomSlugField, self).pre_save(model_instance, add)
+        return value
+
+    def south_field_triple(self):
+        "Returns a suitable description of this field for South."
+        # We'll just introspect the _actual_ field.
+        from south.modelsinspector import introspector
+        field_class = '%s.%s' % (self.__module__, self.__class__.__name__)
+        args, kwargs = introspector(self)
+        kwargs.update({
+            'length': repr(self.length),
+            'exclude_upper': repr(self.exclude_upper),
+            'exclude_lower': repr(self.exclude_lower),
+            'exclude_digits': repr(self.exclude_digits),
+            'exclude_vowels': repr(self.exclude_vowels),
+        })
+        # That's our definition!
+        return (field_class, args, kwargs)
