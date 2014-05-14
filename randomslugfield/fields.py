@@ -2,8 +2,8 @@ import random
 import re
 import string
 
-from django.db.models import SlugField
 from django.core.exceptions import FieldError
+from django.db.models import SlugField
 
 
 class RandomSlugField(SlugField):
@@ -20,11 +20,11 @@ class RandomSlugField(SlugField):
 
     Optional arguments:
 
-        exclude_lower
-            Boolean to exclude lowercase ascii characters. (default=False)
-
         exclude_upper
-            Boolean to exclude uppercase ascii characters. (default=False)
+            Boolean to exclude uppercase characters. (default=False)
+
+        exclude_lower
+            Boolean to exclude lowercase characters. (default=False)
 
         exclude_digits
             Boolean to exclude digits. (default=False)
@@ -36,51 +36,62 @@ class RandomSlugField(SlugField):
     http://pythonhosted.org/django-extensions/
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, length=None, exclude_upper=False, exclude_lower=False,
+                 exclude_digits=False, exclude_vowels=False,
+                 case_insensitive=False,
+                 *args, **kwargs):
         kwargs.setdefault('blank', True)
         kwargs.setdefault('editable', False)
         kwargs.setdefault('unique', True)
 
-        self.length = kwargs.pop('length', None)
-        self.exclude_lower = kwargs.pop('exclude_lower', False)
-        self.exclude_upper = kwargs.pop('exclude_upper', False)
-        self.exclude_digits = kwargs.pop('exclude_digits', False)
-        self.exclude_vowels = kwargs.pop('exclude_vowels', False)
+        self.case_insensitive = case_insensitive
 
-        if self.length is None:
+        if length is None:
             raise ValueError("Missing 'length' argument.")
-        elif not isinstance(self.length, int):
-            raise TypeError("'length' argument is invalid type. Must be integer.")
-
-        if self.exclude_lower and self.exclude_upper and self.exclude_digits:
+        elif exclude_lower and exclude_upper and exclude_digits:
             raise ValueError("Cannot exclude all valid characters.")
-
+        else:
+            self.length = length
+            self.exclude_upper = exclude_upper
+            self.exclude_lower = exclude_lower
+            self.exclude_digits = exclude_digits
+            self.exclude_vowels = exclude_vowels
+        self.chars = self.generate_charset(exclude_upper=self.exclude_upper,
+                                           exclude_lower=self.exclude_lower,
+                                           exclude_digits=self.exclude_digits,
+                                           exclude_vowels=self.exclude_vowels)
         kwargs['max_length'] = self.length
-
-        self.valid_chars = string.ascii_letters + string.digits
-        if self.exclude_lower:
-            self.valid_chars =  self.valid_chars.replace(string.ascii_lowercase, '')
-        if self.exclude_upper:
-            self.valid_chars = self.valid_chars.replace(string.ascii_uppercase, '')
-        if self.exclude_digits:
-            self.valid_chars = self.valid_chars.replace(string.digits, '')
-        if self.exclude_vowels:
-            self.valid_chars = re.sub(r'[aeiouAEIOU]', '', self.valid_chars)
-
         super(RandomSlugField, self).__init__(*args, **kwargs)
+
+    def generate_charset(self, exclude_upper, exclude_lower,
+                         exclude_digits, exclude_vowels):
+        chars = string.ascii_letters + string.digits
+        if exclude_upper:
+            chars = chars.replace(string.ascii_uppercase, '')
+        if exclude_lower:
+            chars = chars.replace(string.ascii_lowercase, '')
+        if exclude_digits:
+            chars = chars.replace(string.digits, '')
+        if exclude_vowels:
+            chars = re.sub(r'[aeiouAEIOU]', '', chars)
+        return chars
 
     def generate_slug(self, model_instance):
         queryset = model_instance.__class__._default_manager.all()
 
-        if queryset.count() >= len(self.valid_chars)**self.length:
+        if queryset.count() >= len(self.chars)**self.length:
             raise FieldError("No available slugs remaining.")
 
-        slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
+        slug = ''.join(random.choice(self.chars) for _ in range(self.length))
 
         # Exclude the current model instance from the queryset used in
         # finding next valid slug.
         if model_instance.pk:
             queryset = queryset.exclude(pk=model_instance.pk)
+
+        lookup_key = self.attname
+        if self.case_insensitive:
+            lookup_key = "%s__iexact" % lookup_key
 
         # Form a kwarg dict used to impliment any unique_together
         # contraints.
@@ -89,11 +100,12 @@ class RandomSlugField(SlugField):
             if self.attname in params:
                 for param in params:
                     kwargs[param] = getattr(model_instance, param, None)
-        kwargs[self.attname] = slug
+        kwargs[lookup_key] = slug
 
         while queryset.filter(**kwargs):
-            slug = ''.join(random.choice(self.valid_chars) for x in range(self.length))
-            kwargs[self.attname] = slug
+            slug = (''.join(random.choice(self.chars)
+                    for _ in range(self.length)))
+            kwargs[lookup_key] = slug
 
         return slug
 
@@ -102,20 +114,20 @@ class RandomSlugField(SlugField):
         if not value:
             value = self.generate_slug(model_instance)
             setattr(model_instance, self.attname, value)
-
         return value
 
     def south_field_triple(self):
         "Returns a suitable description of this field for South."
         # We'll just introspect the _actual_ field.
         from south.modelsinspector import introspector
-        field_class = '%s.RandomSlugField' % self.__module__
+        field_class = '%s.%s' % (self.__module__, self.__class__.__name__)
         args, kwargs = introspector(self)
         kwargs.update({
             'length': repr(self.length),
-            'exclude_lower': repr(self.exclude_lower),
             'exclude_upper': repr(self.exclude_upper),
+            'exclude_lower': repr(self.exclude_lower),
             'exclude_digits': repr(self.exclude_digits),
+            'exclude_vowels': repr(self.exclude_vowels),
         })
         # That's our definition!
         return (field_class, args, kwargs)
