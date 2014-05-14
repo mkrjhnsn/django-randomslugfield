@@ -56,7 +56,11 @@ class RandomSlugField(SlugField):
                                            exclude_lower=self.exclude_lower,
                                            exclude_digits=self.exclude_digits,
                                            exclude_vowels=self.exclude_vowels)
-        kwargs['max_length'] = self.length
+        kwargs.setdefault('max_length', self.length)
+        if kwargs['max_length'] < self.length:
+            raise ValueError(
+                "'max_length' must be equal or greater than 'lenght'.")
+
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
     def generate_charset(self, exclude_upper, exclude_lower,
