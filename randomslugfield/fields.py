@@ -13,7 +13,7 @@ class RandomSlugField(SlugField):
 
     By default sets editable=False, blank=True, and unique=True.
 
-    Requires arguments:
+    Required arguments:
 
         length
             Specifies the length of the generated slug. (integer)
@@ -52,30 +52,24 @@ class RandomSlugField(SlugField):
             self.exclude_lower = exclude_lower
             self.exclude_digits = exclude_digits
             self.exclude_vowels = exclude_vowels
-        self.chars = self.generate_charset(exclude_upper=self.exclude_upper,
-                                           exclude_lower=self.exclude_lower,
-                                           exclude_digits=self.exclude_digits,
-                                           exclude_vowels=self.exclude_vowels)
+
+        self.chars = ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                      '0123456789')
+        if self.exclude_upper:
+            self.chars = self.chars.replace('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '')
+        if self.exclude_lower:
+            self.chars = self.chars.replace('abcdefghijklmnopqrstuvwxyz', '')
+        if self.exclude_digits:
+            self.chars = self.chars.replace('0123456789', '')
+        if exclude_vowels:
+            self.chars = re.sub(r'[aeiouAEIOU]', '', self.chars)
+
         kwargs.setdefault('max_length', self.length)
         if kwargs['max_length'] < self.length:
             raise ValueError("'max_length' must be equal to or greater than "
                              "'length'.")
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
-
-    def generate_charset(self, exclude_upper, exclude_lower, exclude_digits,
-                         exclude_vowels):
-        chars = ('abcdefghijklmnopqrstuvwxyz'
-                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-        if exclude_upper:
-            chars = chars.replace('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '')
-        if exclude_lower:
-            chars = chars.replace('abcdefghijklmnopqrstuvwxyz', '')
-        if exclude_digits:
-            chars = chars.replace('0123456789', '')
-        if exclude_vowels:
-            chars = re.sub(r'[aeiouAEIOU]', '', chars)
-        return chars
 
     def generate_slug(self, model_instance):
         queryset = model_instance.__class__._default_manager.all()
