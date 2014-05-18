@@ -1,9 +1,8 @@
-import random
 import re
-import string
 
 from django.core.exceptions import FieldError
 from django.db.models import SlugField
+from django.utils.crypto import get_random_string
 
 
 class RandomSlugField(SlugField):
@@ -59,20 +58,21 @@ class RandomSlugField(SlugField):
                                            exclude_vowels=self.exclude_vowels)
         kwargs.setdefault('max_length', self.length)
         if kwargs['max_length'] < self.length:
-            raise ValueError(
-                "'max_length' must be equal or greater than 'length'.")
+            raise ValueError("'max_length' must be equal to or greater than "
+                             "'length'.")
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
-    def generate_charset(self, exclude_upper, exclude_lower,
-                         exclude_digits, exclude_vowels):
-        chars = string.ascii_letters + string.digits
+    def generate_charset(self, exclude_upper, exclude_lower, exclude_digits,
+                         exclude_vowels):
+        chars = ('abcdefghijklmnopqrstuvwxyz'
+                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
         if exclude_upper:
-            chars = chars.replace(string.ascii_uppercase, '')
+            chars = chars.replace('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '')
         if exclude_lower:
-            chars = chars.replace(string.ascii_lowercase, '')
+            chars = chars.replace('abcdefghijklmnopqrstuvwxyz', '')
         if exclude_digits:
-            chars = chars.replace(string.digits, '')
+            chars = chars.replace('0123456789', '')
         if exclude_vowels:
             chars = re.sub(r'[aeiouAEIOU]', '', chars)
         return chars
@@ -83,7 +83,7 @@ class RandomSlugField(SlugField):
         if queryset.count() >= len(self.chars)**self.length:
             raise FieldError("No available slugs remaining.")
 
-        slug = ''.join(random.choice(self.chars) for _ in range(self.length))
+        slug = get_random_string(self.length, self.chars)
 
         # Exclude the current model instance from the queryset used in
         # finding next valid slug.
@@ -100,8 +100,7 @@ class RandomSlugField(SlugField):
         kwargs[self.attname] = slug
 
         while queryset.filter(**kwargs):
-            slug = (''.join(random.choice(self.chars)
-                    for _ in range(self.length)))
+            slug = get_random_string(self.length, self.chars)
             kwargs[self.attname] = slug
 
         return slug
