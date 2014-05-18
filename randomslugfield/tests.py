@@ -32,6 +32,7 @@ class MaxSlugs(models.Model):
 
 
 class RandomSlugTestCase(TestCase):
+
     def setUp(self):
         self.lower = 'abcdefghijklmnopqrstuvwxyz'
         self.upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -110,7 +111,7 @@ class RandomSlugTestCase(TestCase):
         '''Test to make sure max_length is correctly set.'''
         field = RandomSlugField(length=10, max_length=255)
         self.assertEqual(field.max_length, 255)
-    
+
     def test_max_length_defaults_to_length(self):
         field = RandomSlugField(length=10)
         self.assertEqual(field.max_length, 10)

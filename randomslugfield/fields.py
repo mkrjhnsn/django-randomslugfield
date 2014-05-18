@@ -7,6 +7,7 @@ from django.db.models import SlugField
 
 
 class RandomSlugField(SlugField):
+
     """ RandomSlugField
 
     Generates a random ascii based slug eg. www.example.com/kEwD58P
@@ -59,7 +60,7 @@ class RandomSlugField(SlugField):
         kwargs.setdefault('max_length', self.length)
         if kwargs['max_length'] < self.length:
             raise ValueError(
-                "'max_length' must be equal or greater than 'lenght'.")
+                "'max_length' must be equal or greater than 'length'.")
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
@@ -69,7 +70,7 @@ class RandomSlugField(SlugField):
         if exclude_upper:
             chars = chars.replace(string.ascii_uppercase, '')
         if exclude_lower:
-            chars =  chars.replace(string.ascii_lowercase, '')
+            chars = chars.replace(string.ascii_lowercase, '')
         if exclude_digits:
             chars = chars.replace(string.digits, '')
         if exclude_vowels:
