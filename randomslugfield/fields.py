@@ -106,6 +106,20 @@ class RandomSlugField(SlugField):
             setattr(model_instance, self.attname, value)
         return value
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(RandomSlugField, self).deconstruct()
+        kwargs['length'] = self.length
+        # Only include kwarg if it's not the default
+        if self.exclude_upper:
+            kwargs['exclude_upper'] = True
+        if self.exclude_lower:
+            kwargs['exclude_lower'] = True
+        if self.exclude_digits:
+            kwargs['exclude_digits'] = True
+        if self.exclude_vowels:
+            kwargs['exclude_vowels'] = True
+        return name, path, args, kwargs
+
     def south_field_triple(self):
         "Returns a suitable description of this field for South."
         # We'll just introspect the _actual_ field.

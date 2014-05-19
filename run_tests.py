@@ -1,5 +1,6 @@
 import sys
 
+import django
 from django.conf import settings
 
 
@@ -14,6 +15,11 @@ def main():
             }
         },
     )
+
+    # Setup django enviroment for standalone tests in django 1.7+
+    # to prevent RuntimeError: App registry isn't ready yet.
+    if django.VERSION[:2] >= (1, 7):
+        django.setup()
 
     from django.test.utils import get_runner
     test_runner = get_runner(settings)(verbosity=2, interactive=True)
