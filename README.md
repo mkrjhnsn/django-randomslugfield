@@ -8,6 +8,8 @@ Django field that automatically generates random slugs.
 
 e.g. example.com/kEwD58P
 
+Tested with Python 2.7, 3.3+ and Django 1.4+.
+
 ##Getting it
 
 You can get randomslugfield by using `pip` or `easy_install`:
