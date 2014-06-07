@@ -6,13 +6,13 @@ setup(
     author="Mike Johnson",
     author_email="mkrjhnsn@gmail.com",
     packages=['randomslugfield'],
-    url="http://github.com/melinko/django-randomslugfield",
+    url="http://github.com/mkrjhnsn/django-randomslugfield",
     license="MIT",
     description="A Django field that automatically generates random slugs.",
     long_description="Generates unique random slugs using these characters "
                      "`abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                      "0123456789`. See the project page for more information: "
-                     "http://github.com/melinko/django-randomslugfield",
+                     "http://github.com/mkrjhnsn/django-randomslugfield",
     tests_require=['django'],
     test_suite='run_tests.main',
     classifiers=[
