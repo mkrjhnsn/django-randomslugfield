@@ -7,9 +7,7 @@ from django.utils.crypto import get_random_string
 
 class RandomSlugField(SlugField):
 
-    """ RandomSlugField
-
-    Generates a random ascii based slug eg. www.example.com/kEwD58P
+    """Generates a random ascii based slug eg. www.example.com/kEwD58P
 
     By default sets editable=False, blank=True, and unique=True.
 
@@ -63,6 +61,7 @@ class RandomSlugField(SlugField):
         super(RandomSlugField, self).__init__(*args, **kwargs)
 
     def generate_charset(self):
+        """Returns a string of characters to be used in the slug."""
         charset = ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
                    '0123456789')
         if self.exclude_upper:
@@ -76,6 +75,7 @@ class RandomSlugField(SlugField):
         return charset
 
     def generate_slug(self, model_instance):
+        """Returns a unique slug."""
         queryset = model_instance.__class__._default_manager.all()
 
         if queryset.count() >= len(self.chars)**self.length:
@@ -125,7 +125,7 @@ class RandomSlugField(SlugField):
         return name, path, args, kwargs
 
     def south_field_triple(self):
-        "Returns a suitable description of this field for South."
+        """Returns a suitable description of this field for South."""
         # We'll just introspect the _actual_ field.
         from south.modelsinspector import introspector
         field_class = '%s.%s' % (self.__module__, self.__class__.__name__)
