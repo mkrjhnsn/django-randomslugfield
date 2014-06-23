@@ -4,7 +4,6 @@
 * Added support for built-in django migrations.
 * Fixed an error with south migrations.
 * It is now possible to set max_length to something other than length. (max_length will default to length if not set.)
-* Moved charset generation into its own method.
 
 ##Version 0.2.1
 * Fixed an error in docstrings.

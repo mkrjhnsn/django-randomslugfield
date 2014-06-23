@@ -51,7 +51,16 @@ class RandomSlugField(SlugField):
             self.exclude_digits = exclude_digits
             self.exclude_vowels = exclude_vowels
 
-        self.chars = self.generate_charset()
+        self.chars = ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                      '0123456789')
+        if self.exclude_upper:
+            self.chars = self.chars.replace('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '')
+        if self.exclude_lower:
+            self.chars = self.chars.replace('abcdefghijklmnopqrstuvwxyz', '')
+        if self.exclude_digits:
+            self.chars = self.chars.replace('0123456789', '')
+        if self.exclude_vowels:
+            self.chars = re.sub(r'[aeiouAEIOU]', '', self.chars)
 
         kwargs.setdefault('max_length', self.length)
         if kwargs['max_length'] < self.length:
@@ -59,20 +68,6 @@ class RandomSlugField(SlugField):
                              "'length'.")
 
         super(RandomSlugField, self).__init__(*args, **kwargs)
-
-    def generate_charset(self):
-        """Returns a string of characters to be used in the slug."""
-        charset = ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                   '0123456789')
-        if self.exclude_upper:
-            charset = charset.replace('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '')
-        if self.exclude_lower:
-            charset = charset.replace('abcdefghijklmnopqrstuvwxyz', '')
-        if self.exclude_digits:
-            charset = charset.replace('0123456789', '')
-        if self.exclude_vowels:
-            charset = re.sub(r'[aeiouAEIOU]', '', charset)
-        return charset
 
     def generate_slug(self, model_instance):
         """Returns a unique slug."""
