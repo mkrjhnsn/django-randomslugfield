@@ -14,14 +14,16 @@ e.g. example.com/kEwD58P
 
 Tested with Python 2.7, 3.3+ and Django 1.4+.
 
+
 Getting it
 ----------
 
-You can get randomslugfield by using ``pip`` or ``easy_install``:
+To install django-randomslugfield:
 
 .. code:: bash
 
     $ pip install django-randomslugfield
+
 
 Install
 -------
@@ -37,6 +39,7 @@ To enable ``randomslugfield`` in your project you need to add it to
          ...
     )
 
+
 Usage
 -----
 
@@ -51,6 +54,7 @@ Import ``RandomSlugField`` and use it in your model:
         slug = RandomSlugField(length=7)
 
 The ``length`` argument is required.
+
 
 Advanced Usage
 --------------
@@ -73,8 +77,6 @@ Example:
         slug = RandomSlugField(length=7, exclude_lower=True)
 
 The total number of unique slugs is determined by ``characters^length``.
-
-e.g.
 
 ::
 
