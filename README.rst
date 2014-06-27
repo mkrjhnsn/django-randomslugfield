@@ -2,7 +2,7 @@ django-randomslugfield
 ======================
 
 .. image:: https://travis-ci.org/mkrjhnsn/django-randomslugfield.svg?branch=master
-     :target: https://travis-ci.org/mkrjhnsn/django-randomslugfield
+    :target: https://travis-ci.org/mkrjhnsn/django-randomslugfield
 .. image:: https://pypip.in/v/django-randomslugfield/badge.png
     :target: https://crate.io/packages/django-randomslugfield/
 .. image:: https://pypip.in/d/django-randomslugfield/badge.png
@@ -34,9 +34,9 @@ To enable ``randomslugfield`` in your project you need to add it to
 .. code:: python
 
     INSTALLED_APPS = (
-         ...
-         'randomslugfield',
-         ...
+        ...
+        'randomslugfield',
+        ...
     )
 
 
