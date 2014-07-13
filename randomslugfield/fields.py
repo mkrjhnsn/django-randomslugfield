@@ -6,7 +6,6 @@ from django.utils.crypto import get_random_string
 
 
 class RandomSlugField(SlugField):
-
     """Generates a random ascii based slug eg. www.example.com/kEwD58P
 
     By default sets editable=False, blank=True, and unique=True.
@@ -73,7 +72,10 @@ class RandomSlugField(SlugField):
         """Returns a unique slug."""
         queryset = model_instance.__class__._default_manager.all()
 
-        if queryset.count() >= len(self.chars)**self.length:
+        # Only count slugs that match current length to prevent issues
+        # when pre-existing slugs are a different length.
+        lookup = {'%s__regex' % self.attname: r'^.{%s}$' % self.length}
+        if queryset.filter(**lookup).count() >= len(self.chars)**self.length:
             raise FieldError("No available slugs remaining.")
 
         slug = get_random_string(self.length, self.chars)
