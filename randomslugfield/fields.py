@@ -6,6 +6,7 @@ from django.utils.crypto import get_random_string
 
 
 class RandomSlugField(SlugField):
+
     """Generates a random ascii based slug eg. www.example.com/kEwD58P
 
     By default sets editable=False, blank=True, and unique=True.
