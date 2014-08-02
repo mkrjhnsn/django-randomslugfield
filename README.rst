@@ -3,10 +3,10 @@ django-randomslugfield
 
 .. image:: https://travis-ci.org/mkrjhnsn/django-randomslugfield.svg?branch=master
     :target: https://travis-ci.org/mkrjhnsn/django-randomslugfield
-.. image:: https://pypip.in/v/django-randomslugfield/badge.png
-    :target: https://crate.io/packages/django-randomslugfield/
-.. image:: https://pypip.in/d/django-randomslugfield/badge.png
-    :target: https://crate.io/packages/django-randomslugfield/
+.. image:: https://pypip.in/version/django-randomslugfield/badge.svg
+    :target: https://pypi.python.org/pypi/django-randomslugfield/
+.. image:: https://pypip.in/download/django-randomslugfield/badge.svg
+    :target: https://pypi.python.org/pypi/django-randomslugfield/
 
 Django field that automatically generates random slugs.
 
