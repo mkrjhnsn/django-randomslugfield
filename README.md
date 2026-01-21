@@ -2,7 +2,7 @@
 >
 > This project is no longer maintained.
 >
-> It was originally made to replicate the style of URL you find on many websites to obfuscate integer based primary keys.\
+> It was originally made to replicate the style of URL you find on many websites to obfuscate integer based primary keys.
 > However the implementation relies on expensive database lookups to prevent collisions.
 >
 > A better/modern alternative to this project would be something using [sqids](https://sqids.org/).
