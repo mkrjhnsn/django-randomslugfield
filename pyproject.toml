@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-randomslugfield"
+description = "A Django field that automatically generates random slugs."
+version = "0.3.0.post1"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 7 - Inactive",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+]
+
+[project.urls]
+Source = "http://github.com/mkrjhnsn/django-randomslugfield"
+
+[tool.setuptools]
+packages = ["randomslugfield"]
